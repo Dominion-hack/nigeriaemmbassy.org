@@ -1,149 +1,597 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>BOT QR PANEL</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HADASSAH 001</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Dancing+Script:wght@600&family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<style>
-body {
-margin:0;
-background:black;
-color:red;
-font-family: "Courier New", monospace;
-text-align:center;
-}
+    <style>
+        :root {
+            --bg-main: #0b0c10;
+            --bg-sidebar: #1f2833;
+            --glow-color: #00f2fe;
+            --glow-pink: #4facfe;
+            --text-main: #c5c6c7;
+            --text-bright: #ffffff;
+            --accent: #66fcf1;
+        }
 
-.title {
-font-size:28px;
-margin-top:20px;
-font-weight:bold;
-text-shadow:0 0 10px red;
-}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
 
-.gothic {
-font-family: "Arial", sans-serif;
-font-weight:bold;
-letter-spacing:2px;
-}
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+        }
 
-.card {
-border:2px solid red;
-margin:20px;
-padding:15px;
-box-shadow:0 0 15px red;
-}
+        /* --- LOCK SCREEN --- */
+        #lock-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle, #1a1c23 0%, #050508 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
 
-input {
-width:80%;
-padding:10px;
-background:black;
-color:red;
-border:1px solid red;
-margin-top:10px;
-}
+        .lock-box {
+            background: rgba(31, 40, 51, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            box-shadow: 0 0 30px rgba(0, 242, 254, 0.1);
+            text-align: center;
+            width: 380px;
+        }
 
-button {
-background:red;
-color:black;
-padding:10px;
-border:none;
-margin-top:10px;
-cursor:pointer;
-font-weight:bold;
-}
+        .lock-box h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            color: var(--text-bright);
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px var(--glow-color);
+        }
 
-img {
-width:250px;
-margin-top:20px;
-border:3px solid red;
-box-shadow:0 0 20px red;
-}
+        .lock-box p {
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            color: #4facfe;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
 
-.console {
-margin:20px;
-padding:10px;
-border:1px solid red;
-text-align:left;
-height:120px;
-overflow:auto;
-box-shadow:0 0 10px red;
-}
-</style>
+        .password-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .password-container input {
+            width: 100%;
+            padding: 15px 20px;
+            background: #0b0c10;
+            border: 2px solid #1f2833;
+            border-radius: 50px;
+            color: #fff;
+            font-size: 1rem;
+            text-align: center;
+            letter-spacing: 3px;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px rgba(0, 242, 254, 0);
+        }
+
+        /* The signature GLOW prompt */
+        .password-container input:focus {
+            border-color: var(--glow-color);
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.6), inset 0 0 10px rgba(0, 242, 254, 0.4);
+        }
+
+        .lock-box button {
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            border: none;
+            padding: 12px 35px;
+            color: #000;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+        }
+
+        .lock-box button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.8);
+        }
+
+        .error-msg {
+            color: #ff4a4a;
+            font-size: 0.85rem;
+            margin-top: 15px;
+            display: none;
+            text-shadow: 0 0 5px rgba(255, 74, 74, 0.4);
+        }
+
+        /* --- MAIN APP LAYOUT --- */
+        #app-container {
+            display: none;
+            height: 100vh;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 300px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid rgba(102, 252, 241, 0.1);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .sidebar-header {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            color: var(--text-bright);
+            letter-spacing: 2px;
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            text-shadow: 0 0 8px var(--glow-pink);
+        }
+
+        .action-btn {
+            background: rgba(102, 252, 241, 0.1);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: var(--accent);
+            color: #000;
+            box-shadow: 0 0 10px rgba(102, 252, 241, 0.4);
+        }
+
+        .tree-container {
+            flex: 1;
+            overflow-y: auto;
+            margin-top: 20px;
+            padding-right: 5px;
+        }
+
+        /* Custom scrollbar for sidebar */
+        .tree-container::-webkit-scrollbar {
+            width: 5px;
+        }
+        .tree-container::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+
+        .folder-item {
+            margin-bottom: 10px;
+        }
+
+        .folder-title, .chapter-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .folder-title:hover, .chapter-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .folder-title-left, .chapter-item-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-bright);
+            font-weight: 500;
+        }
+
+        .folder-title i { color: #ffca28; }
+        .chapter-item i { color: #4facfe; }
+
+        .delete-icon {
+            color: rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .delete-icon:hover { color: #ff4a4a; }
+
+        .chapter-list {
+            margin-left: 20px;
+            border-left: 1px dashed rgba(255,255,255,0.1);
+            padding-left: 10px;
+            margin-top: 5px;
+        }
+
+        .chapter-item.active {
+            background: rgba(79, 172, 254, 0.2);
+            border-left: 3px solid #4facfe;
+        }
+
+        /* Main Workspace Container */
+        .workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-main);
+        }
+
+        /* Editor Toolbar */
+        .toolbar {
+            background: #151a21;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .toolbar select, .toolbar input[type="color"] {
+            background: #1f2833;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 50px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .toolbar button {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .toolbar button:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-bright);
+        }
+
+        .color-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+        }
+
+        .color-wrapper input {
+            width: 25px;
+            height: 25px;
+            border: none;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        /* Text Area Workspace */
+        .editor-container {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .editor {
+            width: 100%;
+            max-width: 800px;
+            min-height: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #e0e0e0;
+            font-size: 1.15rem;
+            line-height: 1.8;
+            word-wrap: break-word;
+        }
+
+        .editor:empty:before {
+            content: "Click on a chapter or create one to start writing her masterpiece...";
+            color: rgba(255,255,255,0.2);
+            font-style: italic;
+        }
+
+        .no-active-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: rgba(255,255,255,0.2);
+            text-align: center;
+        }
+        .no-active-screen i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: rgba(102, 252, 241, 0.1);
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="title gothic">𝖇𝖔𝖙 𝖖𝖗 𝖈𝖔𝖓𝖘𝖔𝖑𝖊</div>
+    <div id="lock-screen">
+        <div class="lock-box">
+            <h1>HADASSAH</h1>
+            <p>0 0 1 &nbsp; S t u d i o</p>
+            <div class="password-container">
+                <input type="password" id="password-input" placeholder="ENTER ACCESS CODE" autocomplete="off">
+            </div>
+            <button onclick="checkPassword()">UNLOOCK</button>
+            <div class="error-msg" id="error-message"><i class="fas fa-exclamation-triangle"></i> Access Denied. Try again, Queen.</div>
+        </div>
+    </div>
 
-<div class="card">
-<h3>📱 ENTER NUMBER (OPTIONAL)</h3>
+    <div id="app-container">
+        <div class="sidebar">
+            <div class="sidebar-header">HADASSAH 001</div>
+            <button class="action-btn" onclick="createNewFolder()">
+                <i class="fas fa-folder-plus"></i> New Folder / Book
+            </button>
 
-<input id="num" placeholder="e.g 2348012345678"/>
-<br>
-<button onclick="generate()">GENERATE QR</button>
-</div>
+            <div class="tree-container" id="tree-container">
+                </div>
+        </div>
 
-<div class="card">
-<h3>📡 LIVE QR CODE</h3>
-<img id="qr" />
-<p id="status">Waiting...</p>
-</div>
+        <div class="workspace">
+            <div class="toolbar" id="editor-toolbar" style="display: none;">
+                <select id="fontName" onchange="executeCmd('fontName', this.value)">
+                    <option value="Inter">Standard (Inter)</option>
+                    <option value="Playfair Display">Elegant Serif</option>
+                    <option value="Cinzel">Royal Majesty</option>
+                    <option value="Dancing Script">Handwritten</option>
+                    <option value="Poppins">Clean Modern</option>
+                </select>
 
-<div class="card">
-<h3>⚡ SYSTEM CONSOLE</h3>
-<div class="console" id="log">
-> System ready...
-</div>
-</div>
+                <select id="fontSize" onchange="executeCmd('fontSize', this.value)">
+                    <option value="3">Normal</option>
+                    <option value="4">Subheading</option>
+                    <option value="5">Heading</option>
+                    <option value="6">Main Title</option>
+                </select>
 
-<script>
+                <button onclick="executeCmd('bold')" title="Bold"><i class="fas fa-bold"></i></button>
+                <button onclick="executeCmd('italic')" title="Italic"><i class="fas fa-italic"></i></button>
+                <button onclick="executeCmd('underline')" title="Underline"><i class="fas fa-underline"></i></button>
+                <button onclick="executeCmd('strikeThrough')" title="Strikethrough"><i class="fas fa-strikethrough"></i></button>
 
-const API = "https://whatsap-bot-production.up.railway.app"
+                <span style="color: rgba(255,255,255,0.2)">|</span>
 
-function log(msg){
-document.getElementById("log").innerHTML += "<br>> " + msg
-}
+                <div class="color-wrapper" title="Text Color">
+                    <i class="fas fa-font"></i>
+                    <input type="color" id="foreColor" value="#ffffff" onchange="executeCmd('foreColor', this.value)">
+                </div>
 
-async function generate(){
+                <div class="color-wrapper" title="Highlight Text">
+                    <i class="fas fa-highlighter"></i>
+                    <input type="color" id="hiliteColor" value="#ffff00" onchange="executeCmd('hiliteColor', this.value)">
+                </div>
+            </div>
 
-const num = document.getElementById("num").value
+            <div class="editor-container">
+                <div id="no-active-view" class="no-active-screen">
+                    <i class="fas fa-feather-alt"></i>
+                    <h2>Welcome back, writer.</h2>
+                    <p style="font-size: 0.9rem; margin-top: 5px;">Select or create a chapter from the sidebar to start writing.</p>
+                </div>
+                <div class="editor" id="story-editor" contenteditable="true" style="display: none;" oninput="saveCurrentChapterContent()"></div>
+            </div>
+        </div>
+    </div>
 
-log("Requesting QR...")
+    <script>
+        // Data Structure Layer
+        let appData = {
+            folders: []
+        };
 
-try {
+        let currentActiveFolderIndex = null;
+        let currentActiveChapterIndex = null;
 
-const res = await fetch(API + "/qr")
-const data = await res.json()
+        // Initialize App & Load from Browser Storage
+        window.onload = function() {
+            const savedData = localStorage.getItem('hadassah_001_data');
+            if(savedData) {
+                appData = JSON.parse(savedData);
+            }
+            renderSidebar();
 
-if(data.qr){
+            // Allow password submission via Enter Key
+            document.getElementById('password-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkPassword();
+                }
+            });
+        };
 
-document.getElementById("qr").src =
-"https://api.qrserver.com/v1/create-qr-code/?data=" +
-encodeURIComponent(data.qr)
+        // Authentication System
+        function checkPassword() {
+            const pinCode = document.getElementById('password-input').value;
+            if(pinCode === "HADASSHA001") {
+                document.getElementById('lock-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('lock-screen').style.display = 'none';
+                    document.getElementById('app-container').style.display = 'flex';
+                }, 500);
+            } else {
+                const err = document.getElementById('error-message');
+                err.style.display = 'block';
+                // Quick Shake Effect
+                err.style.animation = 'none';
+                setTimeout(() => err.style.animation = 'shake 0.3s', 10);
+            }
+        }
 
-document.getElementById("status").innerText =
-data.status || "SCAN QR"
+        // Database Save Action
+        function syncStorage() {
+            localStorage.setItem('hadassah_001_data', JSON.stringify(appData));
+        }
 
-log("QR loaded successfully")
+        // UI Creation Elements
+        function createNewFolder() {
+            const name = prompt("Enter Book/Folder Name:");
+            if (!name) return;
 
-} else {
-log("No QR available")
-}
+            appData.folders.push({
+                id: Date.now(),
+                name: name,
+                chapters: []
+            });
 
-} catch(e){
-log("Error connecting to server")
-}
+            syncStorage();
+            renderSidebar();
+        }
 
-}
+        function createNewChapter(folderIndex) {
+            const title = prompt("Enter Chapter Title:");
+            if (!title) return;
 
-/*
-AUTO REFRESH QR
-*/
-setInterval(generate, 5000)
+            appData.folders[folderIndex].chapters.push({
+                id: Date.now(),
+                title: title,
+                content: ""
+            });
 
-generate()
+            syncStorage();
+            renderSidebar();
+            // Automatically switch to the newly created chapter
+            openChapter(folderIndex, appData.folders[folderIndex].chapters.length - 1);
+        }
 
-</script>
+        // Render Sidebar System Layout Tree
+        function renderSidebar() {
+            const container = document.getElementById('tree-container');
+            container.innerHTML = '';
 
+            appData.folders.forEach((folder, fIdx) => {
+                const folderDiv = document.createElement('div');
+                folderDiv.className = 'folder-item';
+
+                folderDiv.innerHTML = `
+                    <div class="folder-title">
+                        <div class="folder-title-left" onclick="createNewChapter(${fIdx})">
+                            <i class="fas fa-folder"></i>
+                            <span>${escapeHtml(folder.name)}</span>
+                        </div>
+                        <i class="fas fa-trash delete-icon" onclick="deleteFolder(${fIdx}, event)"></i>
+                    </div>
+                    <div class="chapter-list">
+                        ${folder.chapters.map((chap, cIdx) => `
+                            <div class="chapter-item ${currentActiveFolderIndex === fIdx && currentActiveChapterIndex === cIdx ? 'active' : ''}" onclick="openChapter(${fIdx}, ${cIdx})">
+                                <div class="chapter-item-left">
+                                    <i class="fas fa-book-open"></i>
+                                    <span>${escapeHtml(chap.title)}</span>
+                                </div>
+                                <i class="fas fa-times delete-icon" onclick="deleteChapter(${fIdx}, ${cIdx}, event)"></i>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(folderDiv);
+            });
+        }
+
+        // Text Document Work Control Elements
+        function openChapter(fIdx, cIdx) {
+            currentActiveFolderIndex = fIdx;
+            currentActiveChapterIndex = cIdx;
+
+            const chapter = appData.folders[fIdx].chapters[cIdx];
+
+            document.getElementById('no-active-view').style.display = 'none';
+            const editor = document.getElementById('story-editor');
+            const toolbar = document.getElementById('editor-toolbar');
+
+            editor.style.display = 'block';
+            toolbar.style.display = 'flex';
+
+            editor.innerHTML = chapter.content;
+
+            renderSidebar();
+        }
+
+        function saveCurrentChapterContent() {
+            if(currentActiveFolderIndex !== null && currentActiveChapterIndex !== null) {
+                const txt = document.getElementById('story-editor').innerHTML;
+                appData.folders[currentActiveFolderIndex].chapters[currentActiveChapterIndex].content = txt;
+                syncStorage();
+            }
+        }
+
+        // Formatter core command tool runner
+        function executeCmd(command, value = null) {
+            document.execCommand(command, false, value);
+        }
+
+        // Destruction Cleanups
+        function deleteFolder(fIdx, event) {
+            event.stopPropagation();
+            if(confirm("Are you sure you want to delete this folder and all its chapters permanently?")) {
+                appData.folders.splice(fIdx, 1);
+                resetEditorSelection();
+                syncStorage();
+                renderSidebar();
+            }
+        }
+
+        function deleteChapter(fIdx, cIdx, event) {
+            event.stopPropagation();
+            if(confirm("Are you sure you want to delete this chapter?")) {
+                appData.folders[fIdx].chapters.splice(cIdx, 1);
+                resetEditorSelection();
+                syncStorage();
+                renderSidebar();
+            }
+        }
+
+        function resetEditorSelection() {
+            currentActiveFolderIndex = null;
+            currentActiveChapterIndex = null;
+            document.getElementById('story-editor').style.display = 'none';
+            document.getElementById('editor-toolbar').style.display = 'none';
+            document.getElementById('no-active-view').style.display = 'flex';
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+    </script>
 </body>
 </html>
